@@ -219,7 +219,11 @@ def _train_and_save(model_path: Path) -> None:
         print(f"  Head training epoch {epoch + 1}/12 — loss: {avg:.4f}", flush=True)
 
     model_path.parent.mkdir(exist_ok=True)
-    torch.save(model.state_dict(), model_path)
+    checkpoint = {
+        name: tensor.half() if torch.is_floating_point(tensor) else tensor
+        for name, tensor in model.state_dict().items()
+    }
+    torch.save(checkpoint, model_path)
     print(f"\n  [OK] Model saved: {model_path.name}\n")
     logger.info("Model saved to %s", model_path)
 
