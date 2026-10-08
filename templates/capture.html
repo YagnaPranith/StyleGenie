@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  {% if mode == 'upload' %}Upload Photo{% else %}Live Camera{% endif %}
+  · Style Genie
+{% endblock %}
+
+{% block content %}
+
+<section class="flow">
+
+  <!-- ── Breadcrumb ──────────────────────────────────────────────────── -->
+  <a class="back-link" href="/">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+      <path d="M19 12H5M12 5l-7 7 7 7"/>
+    </svg>
+    Back
+  </a>
+
+  <p class="eyebrow">STEP 01 / 02 — PHOTO</p>
+
+  {% if mode == 'upload' %}
+    <h2>Show us your<br><em class="accent">best angle.</em></h2>
+    <p class="lede">Upload a clear, front-facing photo in natural light for the most accurate result.</p>
+  {% else %}
+    <h2>Camera<br><em class="accent">ready?</em></h2>
+    <p class="lede">Position your face in the frame, then hit Capture. Make sure your face is well-lit.</p>
+  {% endif %}
+
+  <!-- ── Capture area ────────────────────────────────────────────────── -->
+  <div class="capture-area" id="captureArea" data-mode="{{ mode }}">
+
+    {% if mode == 'upload' %}
+      <!-- ── Dropzone ──────────────────────────────────────────────── -->
+      <label class="dropzone" for="fileInput" id="dropzone" role="button" tabindex="0" aria-label="Choose or drop an image file">
+        <input type="file" id="fileInput" accept="image/jpeg,image/jpg,image/png,image/webp" aria-label="File picker">
+        <span class="dropzone-icon" aria-hidden="true">↥</span>
+        <strong class="dropzone-title">Choose a photo</strong>
+        <span class="dropzone-sub">or drag &amp; drop it here · JPG, PNG, WEBP up to 10 MB</span>
+      </label>
+
+    {% else %}
+      <!-- ── Webcam ─────────────────────────────────────────────────── -->
+      <div class="webcam-wrap" id="webcamWrap">
+        <video id="camera" autoplay playsinline muted aria-label="Live camera feed"></video>
+        <div class="cam-overlay" aria-hidden="true">
+          <!-- Face guide oval -->
+          <svg class="face-guide" viewBox="0 0 300 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="150" cy="185" rx="110" ry="145" stroke="rgba(217,242,105,0.6)" stroke-width="2" stroke-dasharray="8 6"/>
+          </svg>
+        </div>
+      </div>
+      <canvas id="canvas" hidden aria-hidden="true"></canvas>
+      <button type="button" id="snapBtn" class="btn btn-primary snap-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"/><path d="M20 7h-3.2A2 2 0 0 0 15 5.5L13.5 4h-3L9 5.5A2 2 0 0 0 7.2 7H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2Z"/>
+        </svg>
+        Capture photo
+      </button>
+    {% endif %}
+
+  </div>
+
+  <!-- ── Preview (shown after capture / file select) ─────────────────── -->
+  <div class="preview-wrap" id="previewWrap" hidden>
+    <img id="preview" class="preview-img" alt="Your selected portrait">
+    <button type="button" id="retakeBtn" class="btn btn-ghost retake-btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+        <path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 .49-4.13"/>
+      </svg>
+      {% if mode == 'upload' %}Choose a different photo{% else %}Retake{% endif %}
+    </button>
+  </div>
+
+  <!-- ── Analyze button ─────────────────────────────────────────────── -->
+  <button type="button" id="analyzeBtn" class="btn btn-primary analyze-btn" hidden aria-live="polite">
+    Analyze my style
+  </button>
+
+  <!-- ── Spinner ────────────────────────────────────────────────────── -->
+  <div class="spinner-wrap" id="spinnerWrap" hidden aria-live="polite" aria-label="Analyzing your photo…">
+    <div class="spinner" aria-hidden="true"></div>
+    <span>Analyzing your photo…</span>
+  </div>
+
+  <!-- ── Error message ──────────────────────────────────────────────── -->
+  <p class="error-msg" id="errorMsg" role="alert" aria-live="assertive"></p>
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}Your Look · Style Genie{% endblock %}
+
+{% block content %}
+
+{% if not recommendation %}
+
+  <!-- ── No session ─────────────────────────────────────────────────── -->
+  <section class="flow">
+    <h2>Your look<br><em class="accent">awaits.</em></h2>
+    <p class="lede">We need a photo and an occasion before we can build your outfit.</p>
+    <a class="btn btn-primary" href="/">Start fresh</a>
+  </section>
+
+{% else %}
+
+  <section class="flow rec-page">
+
+    <!-- ── Header ─────────────────────────────────────────────────── -->
+    <p class="eyebrow">YOUR LOOK FOR {{ recommendation.occasion | upper }}</p>
+
+    <h2>
+      Your complete<br>
+      <em class="accent">outfit.</em>
+    </h2>
+
+    <!-- ── Context chips ──────────────────────────────────────────── -->
+    <div class="context-chips" aria-label="Recommendation context">
+      <span class="chip">{{ recommendation.age_group }}</span>
+      <span class="chip">{{ recommendation.gender }}</span>
+      <span class="chip">{{ recommendation.skin_tone }}</span>
+      <span class="chip chip-occasion">{{ recommendation.occasion }}</span>
+    </div>
+
+    <!-- ── Color combination pill ─────────────────────────────────── -->
+    <div class="color-combo">
+      {% set colors = recommendation.color_combination.split(' & ') %}
+      {% for color in colors %}
+        <span
+          class="color-swatch"
+          style="background: {{ color | lower | replace(' ', '') }}"
+          aria-hidden="true"
+          title="{{ color }}"
+        ></span>
+      {% endfor %}
+      <span class="color-combo-label">{{ recommendation.color_combination }}</span>
+    </div>
+
+    <!-- ── Outfit grid ─────────────────────────────────────────────── -->
+    <div class="outfit-grid">
+
+      <article class="outfit-card outfit-card--top">
+        <div class="outfit-card-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.57a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.57a2 2 0 0 0-1.34-2.23Z"/>
+          </svg>
+          TOP WEAR
+        </div>
+        <p class="outfit-card-value">{{ recommendation.top_wear }}</p>
+      </article>
+
+      <article class="outfit-card outfit-card--bottom">
+        <div class="outfit-card-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M6 2v6l-2 4v10h4l2-6 2 6h4V12l-2-4V2H6Z"/>
+          </svg>
+          BOTTOM WEAR
+        </div>
+        <p class="outfit-card-value">{{ recommendation.bottom_wear }}</p>
+      </article>
+
+      <article class="outfit-card outfit-card--shoes">
+        <div class="outfit-card-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          </svg>
+          FOOTWEAR
+        </div>
+        <p class="outfit-card-value">{{ recommendation.footwear }}</p>
+      </article>
+
+      <article class="outfit-card outfit-card--acc">
+        <div class="outfit-card-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="12" cy="8" r="6"/><path d="M12 14v7M9 18h6"/>
+          </svg>
+          ACCESSORIES
+        </div>
+        <p class="outfit-card-value">{{ recommendation.accessories }}</p>
+      </article>
+
+    </div>
+
+    <!-- ── Style tip card ─────────────────────────────────────────── -->
+    <div class="style-tip-card">
+      <p class="style-tip-label">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+          <path d="M9.66 3.56a7 7 0 1 1 4.68 12.92A7 7 0 0 1 9.66 3.56Z"/>
+          <path d="M12 18v3M9 21h6"/>
+        </svg>
+        Genie's Style Note
+      </p>
+      <p class="style-tip-text">{{ recommendation.style_tip }}</p>
+    </div>
+
+    <!-- ── Actions ────────────────────────────────────────────────── -->
+    <div class="rec-actions">
+      <a class="btn btn-primary" href="/prediction">Try another occasion →</a>
+      <a class="btn btn-ghost"   href="/">Start over</a>
+    </div>
+
+  </section>
+
+{% endif %}
+
+{% endblock %}

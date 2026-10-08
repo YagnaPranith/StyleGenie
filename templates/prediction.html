@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% block title %}Your Results · Style Genie{% endblock %}
+
+{% block content %}
+
+{% if not analysis %}
+<section class="flow">
+  <h2>Let's start with<br><em class="accent">a photo.</em></h2>
+  <p class="lede">We need a photo before we can recommend an outfit.</p>
+  <a class="btn btn-primary" href="/">Choose a photo</a>
+</section>
+
+{% else %}
+<section class="flow prediction-page" id="predictionFlow" data-needs-input="{{ 'true' if analysis.needs_input else 'false' }}">
+
+  <a class="back-link" href="/">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Start over
+  </a>
+
+  <p class="eyebrow">STEP 02 / 02 — YOUR RESULTS</p>
+  <h2>Looking <em class="accent">good.</em></h2>
+
+  <p class="detected-badge" id="detectedBadge">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+    <span id="detectedBadgeText">{% if analysis.needs_input %}Face detected — age and gender need your input{% else %}Face detected — review and correct if needed{% endif %}</span>
+  </p>
+  {% if analysis.needs_input %}
+  <p class="lede model-unavailable-note" id="modelUnavailableNote">A trained age and gender model is not installed. Enter both details below so we can tailor your recommendation.</p>
+  {% endif %}
+
+  <!-- ── Detected panel ──────────────────────────────────────────────── -->
+  <div class="detected-panel">
+    <div class="detected-photo-wrap">
+      <img class="detected-photo" src="{{ analysis.image_url }}" alt="Your analyzed portrait" loading="lazy">
+    </div>
+
+    <div class="detected-attrs">
+      <!-- Age -->
+      <div class="attr-row">
+        <span class="attr-label">AGE GROUP</span>
+        <div class="attr-edit-row">
+        <span class="attr-value" id="displayAge">{{ analysis.age_group }}</span>
+          <button class="edit-btn" data-field="age" aria-label="Edit age">✏️ Edit</button>
+        </div>
+        <span class="attr-conf" id="ageConfidence">{% if analysis.needs_input %}Enter your age{% else %}{{ (analysis.confidence.age * 100)|round|int }}% confidence{% endif %} · <em class="model-note">{{ analysis.model }}</em></span>
+        <!-- Inline age editor -->
+        <div class="inline-editor" id="editorAge" hidden>
+          <input class="edit-input" type="number" id="editAgeInput" min="1" max="99" placeholder="Your age (e.g. 24)">
+          <button class="btn btn-primary save-edit-btn" data-field="age" style="padding:7px 14px;font-size:13px">Save</button>
+        </div>
+      </div>
+
+      <!-- Gender -->
+      <div class="attr-row">
+        <span class="attr-label">GENDER</span>
+        <div class="attr-edit-row">
+          <span class="attr-value" id="displayGender">{{ analysis.gender }}</span>
+          <button class="edit-btn" data-field="gender" aria-label="Edit gender">✏️ Edit</button>
+        </div>
+        <span class="attr-conf" id="genderConfidence">{% if analysis.needs_input %}Choose your gender{% else %}{{ (analysis.confidence.gender * 100)|round|int }}% confidence{% endif %}</span>
+        <!-- Inline gender editor -->
+        <div class="inline-editor" id="editorGender" hidden>
+          <div class="radio-row">
+            <label class="radio-card sm">
+              <input type="radio" name="editGender" value="Male"> <span>Male</span>
+            </label>
+            <label class="radio-card sm">
+              <input type="radio" name="editGender" value="Female"> <span>Female</span>
+            </label>
+          </div>
+          <button class="btn btn-primary save-edit-btn" data-field="gender" style="padding:7px 14px;font-size:13px">Save</button>
+        </div>
+      </div>
+
+      <!-- Skin Tone -->
+      <div class="attr-row">
+        <span class="attr-label">SKIN TONE</span>
+        <div class="attr-edit-row">
+          <span class="attr-value" id="displaySkinTone">{{ analysis.skin_tone }}</span>
+          <button class="edit-btn" data-field="skin_tone" aria-label="Edit skin tone">✏️ Edit</button>
+        </div>
+        <span class="attr-conf">{{ (analysis.confidence.skin_tone * 100)|round|int }}% confidence</span>
+        <!-- Inline skin tone editor -->
+        <div class="inline-editor" id="editorSkin_tone" hidden>
+          <select class="edit-select" id="editSkinSelect">
+            {% for tone in ['Very Fair','Fair','Light','Light Medium','Medium','Olive','Tan','Brown / Deep'] %}
+            <option value="{{ tone }}" {% if tone == analysis.skin_tone %}selected{% endif %}>{{ tone }}</option>
+            {% endfor %}
+          </select>
+          <button class="btn btn-primary save-edit-btn" data-field="skin_tone" style="padding:7px 14px;font-size:13px">Save</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Occasion picker ─────────────────────────────────────────────── -->
+  <div class="occasion-section">
+    <label class="occasion-label">What's the occasion?</label>
+    <p class="occasion-hint">Pick the event and we'll build your complete look.</p>
+
+    <div class="occasion-grid" id="occasionGrid" role="list">
+      {% set occasion_icons = {
+        'Birthday': '🎂', 'Beach': '🏖️', 'Wedding': '💍',
+        'Get Together': '🥂', 'Function': '🎊', 'Temple': '🪔',
+        'Office': '💼', 'Picnic': '🧺', 'Park': '🌳'
+      } %}
+      {% for occ in occasions %}
+      <button type="button" class="occasion-chip" data-occasion="{{ occ }}" role="listitem" aria-pressed="false">
+        <span class="occ-emoji" aria-hidden="true">{{ occasion_icons.get(occ, '✨') }}</span>
+        <span class="occ-name">{{ occ }}</span>
+      </button>
+      {% endfor %}
+    </div>
+
+    <select id="occasionSelect" hidden aria-hidden="true">
+      <option value="">Select an occasion</option>
+      {% for occ in occasions %}<option value="{{ occ }}">{{ occ }}</option>{% endfor %}
+    </select>
+
+    <button type="button" id="getLookBtn" class="btn btn-primary get-look-btn" disabled>
+      Reveal my look →
+    </button>
+
+    <div class="spinner-wrap" id="spinnerWrap" hidden aria-live="polite">
+      <div class="spinner" aria-hidden="true"></div>
+      <span>Curating your outfit…</span>
+    </div>
+
+    <p class="error-msg" id="errorMsg" role="alert" aria-live="assertive"></p>
+  </div>
+
+</section>
+{% endif %}
+{% endblock %}

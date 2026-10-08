@@ -1,0 +1,19 @@
+# Style Genie — Python dependencies
+# Install with: pip install -r requirements.txt
+
+# ── Web framework ───────────────────────────────────────────────────────────
+Flask==3.0.3
+
+# ── Image processing ────────────────────────────────────────────────────────
+opencv-python==4.9.0.80
+Pillow==10.3.0
+
+# ── Numerical computing ─────────────────────────────────────────────────────
+numpy==1.26.4
+
+# ── Deep learning — age and gender model ────────────────────────────────────
+torch==2.6.0
+torchvision==0.21.0
+
+# ── Data utilities ───────────────────────────────────────────────────────────
+pandas==2.2.2

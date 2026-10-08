@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block title %}Manual Entry · Style Genie{% endblock %}
+
+{% block content %}
+<section class="flow">
+
+  <a class="back-link" href="/">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Back
+  </a>
+
+  <p class="eyebrow">MANUAL ENTRY</p>
+  <h2>Tell us about<br><em class="accent">yourself.</em></h2>
+  <p class="lede">Fill in your details and we'll build the perfect outfit recommendation for you.</p>
+
+  <form class="manual-form" id="manualForm" novalidate>
+
+    <!-- Gender -->
+    <div class="field-group">
+      <label class="field-label">Gender</label>
+      <div class="radio-row">
+        <label class="radio-card">
+          <input type="radio" name="gender" value="Male" required>
+          <span class="radio-icon">♂</span>
+          <span>Male</span>
+        </label>
+        <label class="radio-card">
+          <input type="radio" name="gender" value="Female">
+          <span class="radio-icon">♀</span>
+          <span>Female</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Age -->
+    <div class="field-group">
+      <label class="field-label" for="ageInput">Age</label>
+      <div class="age-input-wrap">
+        <input
+          class="text-input age-input"
+          type="number"
+          id="ageInput"
+          name="age"
+          min="1" max="99"
+          placeholder="e.g. 24"
+          required
+        >
+        <span class="age-group-preview" id="ageGroupPreview"></span>
+      </div>
+      <span class="field-hint">Enter your age and we'll map it to the right group</span>
+    </div>
+
+    <!-- Skin Tone -->
+    <div class="field-group">
+      <label class="field-label">Skin Tone</label>
+      <div class="tone-grid">
+        {% set tones = [
+          ('Very Fair',    '#f5e0d0', '#333'),
+          ('Fair',         '#f0c9a0', '#333'),
+          ('Light',        '#e8b882', '#333'),
+          ('Light Medium', '#d4916a', '#fff'),
+          ('Medium',       '#c07850', '#fff'),
+          ('Olive',        '#9e6240', '#fff'),
+          ('Tan',          '#8b4a2c', '#fff'),
+          ('Brown / Deep', '#5c2e14', '#fff'),
+        ] %}
+        {% for tone, bg, fg in tones %}
+        <label class="tone-card" style="background:{{ bg }}; color:{{ fg }}">
+          <input type="radio" name="skin_tone" value="{{ tone }}" required>
+          <span>{{ tone }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Occasion -->
+    <div class="field-group">
+      <label class="field-label">Occasion</label>
+      <div class="occasion-grid" id="occasionGrid">
+        {% set occasion_icons = {
+          'Birthday': '🎂', 'Beach': '🏖️', 'Wedding': '💍',
+          'Get Together': '🥂', 'Function': '🎊', 'Temple': '🪔',
+          'Office': '💼', 'Picnic': '🧺', 'Park': '🌳'
+        } %}
+        {% for occ in occasions %}
+        <button type="button" class="occasion-chip" data-occasion="{{ occ }}" aria-pressed="false">
+          <span class="occ-emoji" aria-hidden="true">{{ occasion_icons.get(occ, '✨') }}</span>
+          <span class="occ-name">{{ occ }}</span>
+        </button>
+        {% endfor %}
+      </div>
+      <input type="hidden" id="occasionHidden" name="occasion" value="">
+    </div>
+
+    <!-- Submit -->
+    <button type="submit" class="btn btn-primary submit-btn" id="submitBtn" disabled>
+      Get my outfit →
+    </button>
+
+    <p class="error-msg" id="errorMsg" role="alert" aria-live="assertive"></p>
+
+  </form>
+
+</section>
+{% endblock %}

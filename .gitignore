@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Face datasets are large and contain biometric images.
+UTKFace/
+utkface_aligned_cropped/
+crop_part1/
+
+# Uploaded portraits belong to local app sessions.
+static/uploads/
+
+# Local diagnostics and unrelated scratch script.
+check_imports.py
+check_deepface_torch.py
+f.py
